@@ -4,15 +4,15 @@ const ctx = cvs.getContext("2d");
 /*
     Globaaleja muuttujia clientin päässä
 */
-let ruutux=4;           //ruudun ylakulman kohta glovbaalissa koordinaatistossa
-let ruutuy=3;        
-let ruutuxkoko=30;      //tulosettavan ruudun koko
-let ruutuykoko=30;
+let ruutux=7;           //ruudun ylakulman kohta glovbaalissa koordinaatistossa
+let ruutuy=7;        
+let ruutuxkoko=10;      //tulosettavan ruudun koko
+let ruutuykoko=10;
 let blokkikoko=32;      //yhden blokin koko pikseleina
 
 // nama sisältää "vilkkuvan" unitin tiedot
-let unittix=10;   //globaalissa koordinaatistossa
-let unittiy=11;   //globaalissa koordinaatistossa
+let unittix=9;   //globaalissa koordinaatistossa
+let unittiy=10;   //globaalissa koordinaatistossa
 
 
 /* 
@@ -25,43 +25,43 @@ let vilkku=false;       //kaytetaan unitin vilkuttamiseen
 
 
 const maa_kuva = new Image;
-maa_kuva.src = "C:/javakoe/empire/server/maa.jpg";
+maa_kuva.src = "maa.jpg";
 
 const vesi_kuva = new Image();
-vesi_kuva.src = "C:/javakoe/empire/server/vesi.jpg";
+vesi_kuva.src = "vesi.jpg";
 
 const tyhja_kuva = new Image();
-tyhja_kuva.src = "C:/javakoe/empire/server/tyhja.jpg";
+tyhja_kuva.src = "tyhja.jpg";
 
 const tankki_white_kuva = new Image();
-tankki_white_kuva.src = "C:/javakoe/empire/server/tankki_white.jpg";
+tankki_white_kuva.src = "tankki_white.jpg";
 
 const tankki_red_kuva = new Image();
-tankki_red_kuva.src = "C:/javakoe/empire/server/tankki_red.jpg";
+tankki_red_kuva.src = "tankki_red.jpg";
 
 const tankki_yellow_kuva = new Image();
-tankki_yellow_kuva.src = "C:/javakoe/empire/server/tankki_yellow.jpg";
+tankki_yellow_kuva.src = "tankki_yellow.jpg";
 
 const laiva_white_kuva = new Image();
-laiva_white_kuva.src = "C:/javakoe/empire/server/laiva_white.jpg";
+laiva_white_kuva.src = "laiva_white.jpg";
 
 const laiva_red_kuva = new Image();
-laiva_red_kuva.src = "C:/javakoe/empire/server/laiva_red.jpg";
+laiva_red_kuva.src = "laiva_red.jpg";
 
 const laiva_yellow_kuva = new Image();
-laiva_yellow_kuva.src = "C:/javakoe/empire/server/laiva_yellow.jpg";
+laiva_yellow_kuva.src = "laiva_yellow.jpg";
 
 const transu_white_kuva = new Image();
-transu_white_kuva.src = "C:/javakoe/empire/server/transu_white.jpg";
+transu_white_kuva.src = "transu_white.jpg";
 
 const transu_red_kuva = new Image();
-transu_red_kuva.src = "C:/javakoe/empire/server/transu_red.jpg";
+transu_red_kuva.src = "transu_red.jpg";
 
 const transu_yellow_kuva = new Image();
-transu_yellow_kuva.src = "C:/javakoe/empire/server/transu_yellow.jpg";
+transu_yellow_kuva.src = "transu_yellow.jpg";
 
-
-
+//console.log("palan tulostos");
+ctx.drawImage(transu_white_kuva,100,100); 
 
 /*
 
@@ -81,26 +81,37 @@ class Smpala {
 /* 
     alun asetus
 */
-SalustaKartta_L();
+/*SalustaKartta_L();
 SalustakarttaPelaaja_L();
 
 Salustaunitit_L();
+*/
+
+
+
+
+
+
+
+
+
+
 // haetaan seuraan pelaajan unitin tiedot glob muuttujiin
 SseuraavaUnitti_L();
 tarkastaOnkoRuudulla();
-
+Stee_nako_L();
 draw();      // kutsutaan piirtoa heti alkuun
 
 
 // vilkkumis synicn kutsuminen
-let game = setInterval(draw,500);
+let game = setInterval(draw,1000);
 
 // nappaipen aiheuttama toiminta
 document.addEventListener("keydown",direction);
 
 
 
-function direction(event){
+async function direction(event){
     let viesti="NA";
     let key = event.keyCode;
         
@@ -133,7 +144,8 @@ function direction(event){
     if(viesti=="LEFT" || viesti=="RIGHT" || viesti=="DOWN" || viesti=="UP" || viesti=="DOWNRIGHT" || viesti=="DOWNLEFT"|| viesti=="UPRIGHT"|| viesti=="UPLEFT") {
         // liike
         
-        t=SkasitteleLiike_L(viesti,unittix,unittiy);
+        t=await SkasitteleLiike_L(viesti,unittix,unittiy);
+        Stee_nako_L();
         //t=SkasitteleLiike_L(viesti, SaktiivinenUnitti);
         
         // tässä ilmoitetaan tapahtuma tulos
@@ -149,9 +161,9 @@ function direction(event){
         /*  Painalluksen jälkeen ja toimintojen jälkeen
             haetaan seuraava unitti joka on vuorossa (voi olla sama)
         */
-        SseuraavaUnitti_L();
+        await SseuraavaUnitti_L();
         
-        tarkastaOnkoRuudulla();
+        await tarkastaOnkoRuudulla();
 
     }        
     
@@ -182,16 +194,23 @@ function tarkastaOnkoRuudulla(){
 
 // TASSA PIIRRETAAN JA TATA KUTSUTAAN SYNCIN MUKAAN
 // tai kai erikseenkin...
-function draw(){
+async function draw(){
     // Piirretaan maasto
-    let tulostettavaPala = new Image();
+    let tPala = new Image();
     
-    Stee_nako_L();
+   // Stee_nako_L();
 
     for( let i = 0; i < ruutuxkoko ; i++){
         for( let j = 0; j < ruutuykoko ; j++){ 
-            tulostettavaPala=SmikaPalaKuva_L(ruutux+i,ruutuy+j);
-            ctx.drawImage(tulostettavaPala,i*blokkikoko,j*blokkikoko);
+            pala=await SmikaPalaKuva_L(ruutux+i,ruutuy+j);
+            //ctx.drawImage(tyhja_kuva,i*blokkikoko,j*blokkikoko);
+            //console.log("pala drawrutiinissa ="+pala);
+            //console.log("palan nimi draws="+pala);
+            tPala=palaNimiGraffaksi(pala);
+            //console.log("graffa paladraws="+tPala);
+            //console.log("tpala draw rutiinissa="+tPala);
+           
+            ctx.drawImage(tPala,i*blokkikoko,j*blokkikoko);
         }
     }       
     
@@ -199,16 +218,18 @@ function draw(){
     if(vilkku==false) {
         // ei nay eli laitetaan
         // tassa pitas hakea oikea maastopala jos olisikin vesi
-        tulostettavaPala=SmikaPalaUnitti_L(unittix,unittiy);
-        ctx.drawImage(tulostettavaPala,(unittix-ruutux)*blokkikoko,(unittiy-ruutuy)*blokkikoko); 
+        pala=await SmikaPalaUnitti_L(unittix,unittiy);
+        tPala=palaNimiGraffaksi(pala);
+        ctx.drawImage(tPala,(unittix-ruutux)*blokkikoko,(unittiy-ruutuy)*blokkikoko); 
         
-        //ctx.drawImage(unittikuva,(unittix-ruutux)*blokkikoko,(unittiy-ruutuy)*blokkikoko); 
+        
         vilkku=true;
     } else {
         // nakyy-> eli maan vuoro 
         // tassa pitas hakea oikea maastopala jos olisikin vesi
-        tulostettavaPala=SmikaPalaMaasto_L(unittix,unittiy);
-        ctx.drawImage(tulostettavaPala,(unittix-ruutux)*blokkikoko,(unittiy-ruutuy)*blokkikoko); 
+        pala=await SmikaPalaMaasto_L(unittix,unittiy);
+        tPala=palaNimiGraffaksi(pala);
+        ctx.drawImage(tPala,(unittix-ruutux)*blokkikoko,(unittiy-ruutuy)*blokkikoko); 
         vilkku=false;
     }
     //ctx.fillStyle = "white";
@@ -224,58 +245,274 @@ function draw(){
 /* tahan tulee serverin kutsu rutiini */
 
 
-function SseuraavaUnitti_L() {
-    SseuraavaUnitti();
-}
+async function SmikaPalaMaasto_L(ux,uy) {
+    
+    var   targetUrl = 'http://localhost:3000/SmikaPalaMaasto/'+ux+'/'+uy;
+    
+    let response1 = await fetch(targetUrl);
+    let json1= await response1.json();
 
+
+    //console.log("awaitilla json1="+json1)  ;
+    //console.log("awaitilla stringi="+json1[0].ret)  ;
+    return(json1[0].ret);
+}
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+
+/*
 function SmikaPalaMaasto_L(ux,uy) {
-    pal=SmikaPalaMaasto(ux,uy);
-    if(pal=="maa") {
-        pal=maa_kuva;
-
-    } else if(pal="vesi") {
-        pal=vesi_kuva;
-    }
-
-    return(pal);
+    
+    // serverillaSmikaPalaMaasto
+    var   targetUrl = 'http://localhost:3000/SmikaPalaMaasto/'+ux+'/'+uy;
+    fetch(targetUrl)
+    .then(res => res.json()) // expecting text
+        .then(joku2 => {
+            //console.log("vastaus clientiin text="+joku2[0].ret);
+            pal=palaNimiGraffaksi(joku2[0].ret);
+    
+            return(pal);
+        
+        }
+        )
+        .catch(err => {
+            //console.log(err);
+        });
+    
+       // re=joku2.ret;
 }
-
-function SmikaPalaKuva_L(ux,uy) {
-    pal=SmikaPalaKuva(ux,uy);
-/*    if(pal=="maa") {
-        pal=maa_kuva;
-
-    } else if(pal="vesi") {
-        pal=vesi_kuva;
-    } else if(pal)
-
 
 */
 
-    return(pal);
+
+
+
+
+
+
+
+
+//
+
+async function SmikaPalaKuva_L(ux,uy) {
+    
+    // serverilla
+    var pala3="jotain";
+    var   targetUrl = 'http://localhost:3000/SmikaPalaKuva/'+ux+'/'+uy;
+
+  let response1 = await fetch(targetUrl);
+  let json1= await response1.json();
+
+
+
+    return(json1[0].ret);
+}
+    
+
+
+
+
+
+
+
+/*
+
+
+function SmikaPalaKuva_L(ux,uy) {
+    
+         // serverilla
+    var pala3="jotain";
+         var   targetUrl = 'http://localhost:3000/SmikaPalaKuva/'+ux+'/'+uy;
+    fetch(targetUrl)
+    .then(res => res.json())  
+            .then(joku2 => {
+           // //console.log("vastaus clientiin text="+joku2[0].ret+"olen SMIKAPALAKUVA-L CLIENT");
+           //console.log("pala joku[2].ret eturn SmikaPalaKuva_L="+joku2[0].ret);
+           pala3=String(joku2[0].ret);;
+              // pal=palaNimiGraffaksi(pala);
+           // //console.log("pala sisalla kuvana="+pal);
+           console.log("pala3 return SmikaPalaKuva_L="+pala3); 
+           console.log("ux="+ux+"uy="+uy);
+          
+           return(pala3);
+            }
+            
+    )
+    .catch(err => {
+        //console.log(err);
+        console.log("Ei tahan pitas paasta222");
+    });
+        
+   console.log("Ei tahan pitas paasta pala3="+pala3);
+    return("tyhja");
+   // pal=palaNimiGraffaksi(joku2[0].ret);
+
+   // return(pal);
+}*/
+
+
+async function SmikaPalaUnitti_L(ux,uy) {
+    
+    // serverilla
+    var pala3="jotain";
+    var   targetUrl = 'http://localhost:3000/SmikaPalaUnitti/'+ux+'/'+uy;
+
+  let response1 = await fetch(targetUrl);
+  let json1= await response1.json();
+
+
+    return(json1[0].ret);  
+    
+    
+    
+
 }
 
 
-function SmikaPalaUnitti_L(ux,uy) {
-    pal=SmikaPalaUnitti(ux,uy);
-    return(pal);
+/*function SmikaPalaUnitti_L(ux,uy) {
+    
+    // serverilla
+    var   targetUrl = 'http://localhost:3000/SmikaPalaUnitti/'+ux+'/'+uy;
+    fetch(targetUrl)
+    .then(res => res.json()) // expecting text
+        .then(joku2 => {
+            //console.log("vastaus clientiin text="+joku2[0].ret);
+            pal=palaNimiGraffaksi(joku2[0].ret);
+
+            return(pal);
+        
+          }
+        )
+        .catch(err => {
+            //console.log(err);
+        });
+    
+       // re=joku2.ret;
+       ;
+
+  
+
+
+}*/
+
+
+
+
+
+
+
+
+
+function palaNimiGraffaksi(pal) {
+    if(pal=="maa") {
+        pal=maa_kuva;
+
+    } else if(pal=="vesi") {
+        pal=vesi_kuva;
+    } else if(pal=="tankkiwhite") {
+        pal=tankki_white_kuva;
+
+    } else if(pal=="tankkired") {
+        pal=tankki_red_kuva;
+
+    }  else if(pal=="laivawhite") {
+        pal=laiva_white_kuva;
+
+    } else if(pal=="laivared") {
+        pal=laiva_red_kuva;
+
+    } else if(pal=="transuwhite") {
+        pal=transu_white_kuva;
+
+    }else if(pal=="transured") {
+        pal=transu_red_kuva;
+
+    } else if(pal=="tyhja") {
+        pal=tyhja_kuva;
+    }
+
+    //console.log("palan kuva ="+pal);
+    return pal
+
 }
 
 
-function Stee_nako_L() {
-    Stee_nako();
+
+
+async function Stee_nako_L() {
+   // serverilla
+   var   targetUrl = 'http://localhost:3000/Steenako'
+      
+   let response1 = await fetch(targetUrl);
+   //let json1= await response1.json();
+ 
 }
 
-function SseuraavaUnitti_L() {
-    SseuraavaUnitti();
+async function SseuraavaUnitti_L() {
+    // serverilla
+    var   targetUrl = 'http://localhost:3000/SseuraavaUnitti'
+    let response1 = await fetch(targetUrl);
+    let json1= await response1.json();
+
+    unittix=json1.x;
+    unittiy=json1.y;
+
+//****************************************************************
+    //****************************************************************
+//****************************************************************
+    //**************************************************************** */
+    // TASSA PITAS päivittaa unittix JA unittiy
+    
+    //let json1= await response1.json();
+  
+ 
 }
 
-function SkasitteleLiike_L(t,x,y) {
-    ret=SkasitteleLiike(t,x,y);
-    return(ret);
+async function SkasitteleLiike_L(t,x,y) {
+    // serverilla
+    if(t=="UP"){
+       t2=8;
+    } else if(t=="DOWN") {
+        t2=2;
+    } else if(t=="LEFT") {
+        t2=4;
+    } else if(t=="RIGHT") {
+        t2=6;
+    } else if(t=="DOWNRIGHT") {
+        t2=3;
+    } else if(t=="DOWNLEFT") {
+        t2=1;
+    } else if(t=="UPRIGHT") {
+        t2=9;
+    } else if(t=="UPLEFT") {
+        t2=7;
+    } else {
+        //console.log("ERROR Skasitteleliike_L");
+
+    }
+    
+     // serverilla
+     
+     var   targetUrl = 'http://localhost:3000/SkasitteleLiike/'+t2+'/'+x+'/'+y;
+     let response1 = await fetch(targetUrl);
+     let json1= await response1.json();
+    re=1;
+     //console.log("Luettu serverilta palautus ="+re);
+
+    //ret=SkasitteleLiike(t2,x,y);
+    return(re);
 }
 
-function SalustaKartta_L() {
+/*function SalustaKartta_L() {
     SalustaKartta();
     
 }
@@ -288,7 +525,7 @@ function Salustaunitit_L() {
     Salustaunitit();
 }
 
-
+*/
 
 
 

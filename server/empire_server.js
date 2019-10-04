@@ -1,48 +1,181 @@
+const express = require('express');
+const app = express();
+ 
+app.use(express.json());
+ 
+
+
+app.get('/Steenako', (req, res) => {
+     //a = JSON.stringify(games);
+     //console.log("lähetä stringi="+a);
+     //console.log("lähetä json="+games);
+     //
+     //console.log("Nako kutsuttu");
+     Stee_nako();
+     //console.log("lähetä stringi="+a);
+     //res.send("nako kutsuttu");
+});
+ 
+
+
+app.get('/SseuraavaUnitti', (req, res) => {
+    
+    //console.log("lähetä stringi="+a);
+    //console.log("lähetä json="+games);
+    //
+   // console.log("SseuraavaUnitti kutsuttu");
+    olio=SseuraavaUnitti();
+
+          
+
+    a = JSON.stringify(olio);
+    //console.log("palautetaan stringi="+a);
+    //console.log("lähetä json="+siirto_olio);
+    
+    res.send(a);
+    //console.log("lähetä stringi="+a);
+    //res.send("SseuraavaUnitti kutsuttu");
+});
+
+
+
+
+app.get('/SkasitteleLiike/:id1/:id2/:id3', (req, res) => {
+
+    
+    ekaluku =parseInt(req.params.id1);
+    tokaluku= parseInt(req.params.id2);
+    kolmasluku= parseInt(req.params.id3);
+    
+    //console.log("id1="+ekaluku+" id2="+tokaluku+" id3="+kolmasluku);
+    
+    var t="JOKU";
+
+     // lasketaan liikepiste
+     if(ekaluku==8){
+        t="UP"
+    } else if(ekaluku==2) {
+        t="DOWN"
+    } else if(ekaluku==4) {
+        t="LEFT"
+    } else if(ekaluku==6) {
+        t="RIGHT"
+    } else if(ekaluku==3) {
+        t="DOWNRIGHT"
+    } else if(ekaluku==1) {
+        t="DOWNLEFT"
+    } else if(ekaluku==9) {
+        t="UPRIGHT"
+    } else if(ekaluku==7) {
+        t="UPLEFT"
+    }
+    console.log("id1="+ekaluku+" tapahtuma"+t+" id2="+tokaluku+" id3="+kolmasluku);
+
+    intti=SkasitteleLiike(t,tokaluku,kolmasluku);
+    
+      
+
+    a = JSON.stringify(intti);
+    //console.log("palautetaan stringi="+a);
+    //console.log("lähetä json="+siirto_olio);
+    
+    res.send(a);
+});
+ 
+
+app.get('/SmikaPalaMaasto/:id1/:id2', (req, res) => {
+
+    
+    ekaluku =parseInt(req.params.id1);
+    tokaluku= parseInt(req.params.id2);
+        
+    //console.log("id1="+ekaluku+" id2="+tokaluku+" id3="+kolmasluku);
+    
+   // console.log("id1="+ekaluku+" tapahtuma"+" id2="+tokaluku);
+
+    palanimi=SmikaPalaMaasto(ekaluku,tokaluku);
+    
+    siirto_olio = [{ 
+        "ret": palanimi,
+    }];
+
+
+    a = JSON.stringify(siirto_olio);
+    //console.log("palautetaan stringi="+palanimi);
+    //console.log("lähetä stringi="+a);
+    
+    res.send(a);
+});
+ 
+app.get('/SmikaPalaKuva/:id1/:id2', (req, res) => {
+
+    
+    ekaluku =parseInt(req.params.id1);
+    tokaluku= parseInt(req.params.id2);
+        
+    //console.log("id1="+ekaluku+" id2="+tokaluku+" id3="+kolmasluku);
+    
+   // console.log("id1="+ekaluku+" id2="+tokaluku);
+
+    palanimi=SmikaPalaKuva(ekaluku,tokaluku);
+    
+    siirto_olio = [{ 
+        "ret": palanimi,
+    }];
+    
+
+    a = JSON.stringify(siirto_olio);
+    
+    
+    res.send(a);
+});
+ 
+
+
+
+app.get('/SmikaPalaUnitti/:id1/:id2', (req, res) => {
+
+    
+    ekaluku =parseInt(req.params.id1);
+    tokaluku= parseInt(req.params.id2);
+        
+    //console.log("id1="+ekaluku+" id2="+tokaluku+" id3="+kolmasluku);
+    
+   // console.log("id1="+ekaluku+" id2="+tokaluku);
+
+    palanimi=SmikaPalaUnitti(ekaluku,tokaluku);
+    
+    siirto_olio = [{ 
+        "ret": palanimi,
+    }];
+    
+
+    a = JSON.stringify(siirto_olio);
+    //console.log("palautetaan stringi="+palanimi);
+    //console.log("lähetä json="+siirto_olio);
+    
+    res.send(a);
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 //aktiivisen pelaajan väri
 // TAMA PITÄNEE SIIRTÄÄ PARAMETREIHIN
 
-pelaaja="WHITE";
-
-// load images
-/*
-const maa_kuva = new Image();
-maa_kuva.src = "C:/javakoe/empire/server/maa.jpg";
-
-const vesi_kuva = new Image();
-vesi_kuva.src = "C:/javakoe/empire/server/vesi.jpg";
-
-const tyhja_kuva = new Image();
-tyhja_kuva.src = "C:/javakoe/empire/server/tyhja.jpg";
-
-const tankki_white_kuva = new Image();
-tankki_white_kuva.src = "C:/javakoe/empire/server/tankki_white.jpg";
-
-const tankki_red_kuva = new Image();
-tankki_red_kuva.src = "C:/javakoe/empire/server/tankki_red.jpg";
-
-const tankki_yellow_kuva = new Image();
-tankki_yellow_kuva.src = "C:/javakoe/empire/server/tankki_yellow.jpg";
-
-const laiva_white_kuva = new Image();
-laiva_white_kuva.src = "C:/javakoe/empire/server/laiva_white.jpg";
-
-const laiva_red_kuva = new Image();
-laiva_red_kuva.src = "C:/javakoe/empire/server/laiva_red.jpg";
-
-const laiva_yellow_kuva = new Image();
-laiva_yellow_kuva.src = "C:/javakoe/empire/server/laiva_yellow.jpg";
-
-const transu_white_kuva = new Image();
-transu_white_kuva.src = "C:/javakoe/empire/server/transu_white.jpg";
-
-const transu_red_kuva = new Image();
-transu_red_kuva.src = "C:/javakoe/empire/server/transu_red.jpg";
-
-const transu_yellow_kuva = new Image();
-transu_yellow_kuva.src = "C:/javakoe/empire/server/transu_yellow.jpg";
-
-*/
-
+pelaaja="white";
 
 /*
     serverin paan juttuja
@@ -76,11 +209,11 @@ class Sunitti  {
     }
 
     paaseeko(nimi) {
-        if (this.tyyppi=="TANKKI" && nimi==maa_kuva) {
+        if (this.tyyppi=="tankki" && nimi=="maa") {
             // paasee
             return(true);
         }      
-        if (this.tyyppi=="LAIVA" && nimi==vesi_kuva) {
+        if (this.tyyppi=="laiva" && nimi=="vesi") {
             // paasee
             return(true);
         }      
@@ -106,6 +239,13 @@ class tapahtumaX {
         this.voittajahp=voittajahp;
     }
 }
+
+
+/* Alustuksia */
+SalustaKartta();
+SalustakarttaPelaaja();
+
+Salustaunitit();
 
 
 /* SERVERI TÄÄLLÄ */
@@ -134,8 +274,12 @@ function SseuraavaUnitti() {
         /*
             TÄSSÄ ON EPÄMÄÄRÄINEN TIEDONSIIRTO SERVERILTA CLIENTIN GLOBAALEIHIN MUUTTUJIIN
         */
+        
         unittix=SnextUnitX(seuraavaunitti);
         unittiy=SnextUnitY(seuraavaunitti);
+        return([{"x":unittix, "y":unittiy}]);
+        
+        
         //SaktiivinenUnitti=seuraavaunitti;
 
 
@@ -146,7 +290,7 @@ function SseuraavaUnitti() {
         
     } else {
         // Ei löydy enää unitteja siirrettäväksi
-        alert("rundi loppu");
+        console.log("rundi loppu");
     }
 
 }
@@ -160,6 +304,7 @@ function SmikaPalaKuva(x, y) {
 
 
 function SmikaPalaMaasto(x, y) {
+    console.log("Mikapala maasto x="+x+ " y="+y);
     return(Smkartta[x][y]);
 }
 
@@ -167,8 +312,8 @@ function SmikaPalaUnitti(x, y) {
     
     i=SonkoUnitti(x,y);
     if(i==-1) {
-        console.log("Error ei pitäisi tulla palautusta -1, kun haetaan vilkkuvaa unittia!");
-
+        console.log("tanne ei pitas paasta kun haetaan vilkkuvan unitin numeroa");
+        i=0; /// HÄTÄ KORJAUS KORJAA JOS EI VILKU
     }
     
     return(Sunitit[i].kuva);
@@ -181,11 +326,12 @@ function SkasitteleLiike(tapahtuma,x,y){
     // pitaa analysoida liikkeen jälkeinen tapahtuma
 
     unittinum=SonkoUnitti(x,y);
-    if(i==-1) {
-        console.log("Error ei pitäisi tulla palautusta -1, kun haetaan vilkkuvaa unittia!");
-
+    if(unittinum==-1) {
+        console.log("SKasittele liike ei loyytnyt unittia");
+        // korjaus etei kaadu debuggauksessa
+        unittinum=1;
     }
-    
+
     //katso onko nappulaa
     //katso pääseekö
     let kohdex, kohdey;
@@ -226,7 +372,7 @@ function SkasitteleLiike(tapahtuma,x,y){
         kohdey=Sunitit[unittinum].y-1;
     }
    
-    //alert("kohdex="+kohdex+" kohdey="+kohdey+" unittinum="+unittinum);
+    //console.log("kohdex="+kohdex+" kohdey="+kohdey+" unittinum="+unittinum);
 
     
     if((Sunitit[unittinum].paaseeko(Smkartta[kohdex][kohdey]))==true)
@@ -271,7 +417,7 @@ function SkasitteleLiike(tapahtuma,x,y){
       
     }
    
-    alert(tulostapahtuma+" tulos "+tulos);
+    console.log(tulostapahtuma+" tulos "+tulos);
 
     // pitaa tehda liike serverin puolella
 
@@ -284,7 +430,7 @@ function SkasitteleLiike(tapahtuma,x,y){
         a=Math.floor(Math.random() * (10 - 1 + 1));
         if(a>=5) {
             // hyokkaaja voitti
-            alert("voitit tulos"+tulos);
+            console.log("voitit tulos"+tulos);
             Sunitit[unittinum].x=kohdex;
             Sunitit[unittinum].y=kohdey;
             Sunitit[unittinum].lp--;
@@ -293,7 +439,7 @@ function SkasitteleLiike(tapahtuma,x,y){
             
         } else {
             // puolustaja voitti
-            alert("hävisit tulos"+tulos);
+            console.log("hävisit tulos"+tulos);
             Smkarttapelaaja[Sunitit[unittinum].x][Sunitit[unittinum].y]=Smkartta[Sunitit[unittinum].x][Sunitit[unittinum].y];
             StuhoaUnitti(unittinum);
         }
@@ -305,13 +451,13 @@ function SkasitteleLiike(tapahtuma,x,y){
         //katsotaan meneekö kyytiin
         if(Sunitit[tulos].sisaan_tyyppi!="tyhja") {
             // on transu tyyppi
-            alert("kohde on transu");
+            console.log("kohde on transu");
             if(Sunitit[tulos].sisaan_tyyppi == Sunitit[unittinum].tyyppi) {
                 // on oikea tyyppi
-                alert("on oikea tyyppi");
+                console.log("on oikea tyyppi");
                 if(Sunitit[tulos].tilaa>0){
                     // nyt menisi siaan
-                    alert("menisi sisaan");
+                    console.log("menisi sisaan");
                     Sunitit[tulos].tilaa--;
                     Sunitit[unittinum].missasisalla=tulos;
                     Sunitit[unittinum].lp=0;
@@ -384,24 +530,24 @@ function Stee_nako() {
                     for(let w=0;w<=SunittienMaara;w++) {
                         if(Sunitit[w].x==j && Sunitit[w].y==k && Sunitit[w].missasisalla==-1) {
                             // on unitti samassa
-                            //if(Sunitit[w].omistaja=="WHITE") {
-                              //  if(Sunitit[w].tyyppi=="TANKKI") {
+                            //if(Sunitit[w].omistaja=="white") {
+                              //  if(Sunitit[w].tyyppi=="tankki") {
                                 //    Smkarttapelaaja[j][k]=tankki_white_kuva;    
-                                //} else if(Sunitit[w].tyyppi=="LAIVA" ) {
+                                //} else if(Sunitit[w].tyyppi=="laiva" ) {
                                     //Smkarttapelaaja[j][k]=laiva_white_kuva;
                                     Smkarttapelaaja[j][k]=Sunitit[w].kuva;
                                     
                                 //}
                             //} else if(Sunitit[w].omistaja=="RED") {
-                              //  if(Sunitit[w].tyyppi=="TANKKI") {
+                              //  if(Sunitit[w].tyyppi=="tankki") {
                                 //    Smkarttapelaaja[j][k]=tankki_red_kuva;    
-                                //} else if(Sunitit[w].tyyppi=="LAIVA" ) {
+                                //} else if(Sunitit[w].tyyppi=="laiva" ) {
                                   //  Smkarttapelaaja[j][k]=laiva_red_kuva;
                                 //}
                             //} else if(Sunitit[w].omistaja=="YELLOW") {
-                                //if(Sunitit[w].tyyppi=="TANKKI") {
+                                //if(Sunitit[w].tyyppi=="tankki") {
                                   //  Smkarttapelaaja[j][k]=tankki_yellow_kuva;    
-                                //} else if(Sunitit[w].tyyppi=="LAIVA" ) {
+                                //} else if(Sunitit[w].tyyppi=="laiva" ) {
                                     //Smkarttapelaaja[j][k]=laiva_yellow_kuva;
                                 //}
                           //  }
@@ -420,7 +566,7 @@ function SonkoUnitti(x,y)
         if(Sunitit[i].x==x && Sunitit[i].y==y && Sunitit[i].missasisalla==-1) {
             turva_i=i;
             onko_unittia=true;
-            //alert("löyty unitti");
+            //console.log("löyty unitti");
         } 
     }
     if(onko_unittia==true) {
@@ -436,33 +582,43 @@ function SonkoUnitti(x,y)
 //  Alustuksia Serverin pää
 //
 function SalustaKartta() {
+    console.log("Kartta alustettu");
     for(let i=0;i<Skarttaxkoko;i++) {
         for(let j=0;j<Skarttaykoko;j++) {
-             Smkartta[i][j]=maa_kuva;
+             Smkartta[i][j]="maa";
         }    
     }
-    Smkartta[10][10]=vesi_kuva;
-    Smkartta[10][11]=vesi_kuva;
-    Smkartta[10][12]=vesi_kuva;
-    Smkartta[11][10]=vesi_kuva;
-    Smkartta[11][11]=vesi_kuva;
-    Smkartta[11][12]=vesi_kuva;
+    Smkartta[10][10]="vesi";
+    Smkartta[10][11]="vesi";
+    Smkartta[10][12]="vesi";
+    Smkartta[11][10]="vesi";
+    Smkartta[11][11]="vesi";
+    Smkartta[11][12]="vesi";
 }
 
 function SalustakarttaPelaaja() {
+    console.log("Pelaajan kartta alustettu");
     for(let i=0;i<Skarttaxkoko;i++) {
         for(let j=0;j<Skarttaykoko;j++) {
-             Smkarttapelaaja[i][j]=tyhja_kuva;
+             Smkarttapelaaja[i][j]="tyhja";
         }    
     }
 }
 
 
 function Salustaunitit() {
-    Sunitit[0]=new Sunitti(9,10,5,"TANKKI","WHITE", tankki_white_kuva, "tyhja",0,-1);
-    Sunitit[1]=new Sunitti(9,11,6,"TANKKI","WHITE", tankki_white_kuva,"tyhja",0,-1);
-    Sunitit[2]=new Sunitti(8,10,6,"TANKKI","RED", tankki_red_kuva,"tyhja",0,-1);
-    Sunitit[3]=new Sunitti(11,10,6,"LAIVA","WHITE", laiva_white_kuva,"tyhja",0,-1);
-    Sunitit[4]=new Sunitti(10,10,6,"LAIVA","WHITE", transu_white_kuva,"TANKKI",3,-1);
+    // PERIAATTEESSA TUO 'tankkiwhite' yms. on turha kun saisi pääteltyä kahdesta edellisestä
+    console.log("Unitit alustettu");
+    
+    Sunitit[0]=new Sunitti(9,10,5,"tankki","white", "tankkiwhite", "tyhja",0,-1);
+    Sunitit[1]=new Sunitti(9,11,6,"tankki","white", "tankkiwhite","tyhja",0,-1);
+    Sunitit[2]=new Sunitti(8,10,6,"tankki","RED", "tankkired","tyhja",0,-1);
+    Sunitit[3]=new Sunitti(11,10,6,"laiva","white", "laivawhite","tyhja",0,-1);
+    Sunitit[4]=new Sunitti(10,10,6,"laiva","white", "transuwhite","tankki",3,-1);
     SunittienMaara=4;
 }
+
+
+const port = process.env.PORT || 3000;
+app.listen(port, () => console.log(`Listening on port ${port}...`));
+

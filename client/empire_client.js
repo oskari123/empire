@@ -21,6 +21,7 @@ let unittiy=10;   //globaalissa koordinaatistossa
 
 let vilkku=false;       //kaytetaan unitin vilkuttamiseen
 
+
 // load images
 
 
@@ -60,38 +61,6 @@ transu_red_kuva.src = "transu_red.jpg";
 const transu_yellow_kuva = new Image();
 transu_yellow_kuva.src = "transu_yellow.jpg";
 
-//console.log("palan tulostos");
-ctx.drawImage(transu_white_kuva,100,100); 
-
-/*
-
-class Smpala {
-        
-    constructor (kuva, "maa") 
-    {
-        //this.kuva=kuva;
-        this.nimi=nimi;
-    }
-}
-
-*/
-
-
-
-/* 
-    alun asetus
-*/
-/*SalustaKartta_L();
-SalustakarttaPelaaja_L();
-
-Salustaunitit_L();
-*/
-
-
-
-
-
-
 
 
 
@@ -100,11 +69,11 @@ Salustaunitit_L();
 SseuraavaUnitti_L();
 tarkastaOnkoRuudulla();
 Stee_nako_L();
-draw();      // kutsutaan piirtoa heti alkuun
+drawKokonaan();      // kutsutaan piirtoa heti alkuun
 
 
 // vilkkumis synicn kutsuminen
-let game = setInterval(draw,1000);
+let game = setInterval(drawVilkku,500);
 
 // nappaipen aiheuttama toiminta
 document.addEventListener("keydown",direction);
@@ -148,6 +117,9 @@ async function direction(event){
         Stee_nako_L();
         //t=SkasitteleLiike_L(viesti, SaktiivinenUnitti);
         
+
+        
+
         // tässä ilmoitetaan tapahtuma tulos
         // 1. pääsee  ei unittia -> liiku
         // 2. paase , oma -> meneeko sisaan vai onko liikkumisesto
@@ -163,8 +135,8 @@ async function direction(event){
         */
         await SseuraavaUnitti_L();
         
-        await tarkastaOnkoRuudulla();
-
+        tarkastaOnkoRuudulla();
+        drawKokonaan();
     }        
     
 
@@ -194,7 +166,55 @@ function tarkastaOnkoRuudulla(){
 
 // TASSA PIIRRETAAN JA TATA KUTSUTAAN SYNCIN MUKAAN
 // tai kai erikseenkin...
-async function draw(){
+async function drawVilkku(){
+    // Piirretaan maasto
+    let tPala = new Image();
+    
+   // Stee_nako_L();
+
+   /*for( let i = 0; i < ruutuxkoko ; i++){
+        for( let j = 0; j < ruutuykoko ; j++){ 
+            pala=await SmikaPalaKuva_L(ruutux+i,ruutuy+j);
+            //ctx.drawImage(tyhja_kuva,i*blokkikoko,j*blokkikoko);
+            //console.log("pala drawrutiinissa ="+pala);
+            //console.log("palan nimi draws="+pala);
+            tPala=palaNimiGraffaksi(pala);
+            //console.log("graffa paladraws="+tPala);
+            //console.log("tpala draw rutiinissa="+tPala);
+           
+            ctx.drawImage(tPala,i*blokkikoko,j*blokkikoko);
+        }
+    }*/       
+    
+    // piirretaan lopuksi unitti
+    if(vilkku==false) {
+        // ei nay eli laitetaan
+        // tassa pitas hakea oikea maastopala jos olisikin vesi
+      //console.log("unittix"+unittix+"unitty"+unittiy+"vilkkuuko false");
+        pala=await SmikaPalaUnitti_L(unittix,unittiy);
+        tPala=palaNimiGraffaksi(pala);
+        ctx.drawImage(tPala,(unittix-ruutux)*blokkikoko,(unittiy-ruutuy)*blokkikoko); 
+        
+        
+        vilkku=true;
+    } else {
+        // nakyy-> eli maan vuoro 
+        // tassa pitas hakea oikea maastopala jos olisikin vesi
+        //console.log("unittix"+unittix+"unitty"+unittiy+"vilkkuuko true");
+        pala=await SmikaPalaMaasto_L(unittix,unittiy);
+        tPala=palaNimiGraffaksi(pala);
+        ctx.drawImage(tPala,(unittix-ruutux)*blokkikoko,(unittiy-ruutuy)*blokkikoko); 
+        vilkku=false;
+    }
+    //ctx.fillStyle = "white";
+    //ctx.font = "bold 20px sans-serif";
+    //ctx.fillText("unum="+SaktiivinenUnitti+" x="+unittix+" y="+unittiy+" lp"+Sunitit[SaktiivinenUnitti].lp,0,20);
+    //ctx.fillText("pelaaja="+pelaaja+" unitin om="+Sunitit[SaktiivinenUnitti].omistaja,0,40);
+}
+
+
+
+async function drawKokonaan(){
     // Piirretaan maasto
     let tPala = new Image();
     
@@ -218,20 +238,26 @@ async function draw(){
     if(vilkku==false) {
         // ei nay eli laitetaan
         // tassa pitas hakea oikea maastopala jos olisikin vesi
+      console.log("unittix"+unittix+"unitty"+unittiy+"vilkkuuko false");
         pala=await SmikaPalaUnitti_L(unittix,unittiy);
         tPala=palaNimiGraffaksi(pala);
         ctx.drawImage(tPala,(unittix-ruutux)*blokkikoko,(unittiy-ruutuy)*blokkikoko); 
         
         
         vilkku=true;
-    } else {
+    } 
+    
+    
+    /*
+    else {
         // nakyy-> eli maan vuoro 
         // tassa pitas hakea oikea maastopala jos olisikin vesi
+        console.log("unittix"+unittix+"unitty"+unittiy+"vilkkuuko true");
         pala=await SmikaPalaMaasto_L(unittix,unittiy);
         tPala=palaNimiGraffaksi(pala);
         ctx.drawImage(tPala,(unittix-ruutux)*blokkikoko,(unittiy-ruutuy)*blokkikoko); 
         vilkku=false;
-    }
+    }*/
     //ctx.fillStyle = "white";
     //ctx.font = "bold 20px sans-serif";
     //ctx.fillText("unum="+SaktiivinenUnitti+" x="+unittix+" y="+unittiy+" lp"+Sunitit[SaktiivinenUnitti].lp,0,20);
@@ -239,14 +265,12 @@ async function draw(){
 }
 
 
-
-
-
 /* tahan tulee serverin kutsu rutiini */
 
 
 async function SmikaPalaMaasto_L(ux,uy) {
     
+    console.log("ux="+ux+"uy="+uy);
     var   targetUrl = 'http://localhost:3000/SmikaPalaMaasto/'+ux+'/'+uy;
     
     let response1 = await fetch(targetUrl);
@@ -268,35 +292,6 @@ async function SmikaPalaMaasto_L(ux,uy) {
   
   
   
-
-/*
-function SmikaPalaMaasto_L(ux,uy) {
-    
-    // serverillaSmikaPalaMaasto
-    var   targetUrl = 'http://localhost:3000/SmikaPalaMaasto/'+ux+'/'+uy;
-    fetch(targetUrl)
-    .then(res => res.json()) // expecting text
-        .then(joku2 => {
-            //console.log("vastaus clientiin text="+joku2[0].ret);
-            pal=palaNimiGraffaksi(joku2[0].ret);
-    
-            return(pal);
-        
-        }
-        )
-        .catch(err => {
-            //console.log(err);
-        });
-    
-       // re=joku2.ret;
-}
-
-*/
-
-
-
-
-
 
 
 
@@ -324,41 +319,6 @@ async function SmikaPalaKuva_L(ux,uy) {
 
 
 
-/*
-
-
-function SmikaPalaKuva_L(ux,uy) {
-    
-         // serverilla
-    var pala3="jotain";
-         var   targetUrl = 'http://localhost:3000/SmikaPalaKuva/'+ux+'/'+uy;
-    fetch(targetUrl)
-    .then(res => res.json())  
-            .then(joku2 => {
-           // //console.log("vastaus clientiin text="+joku2[0].ret+"olen SMIKAPALAKUVA-L CLIENT");
-           //console.log("pala joku[2].ret eturn SmikaPalaKuva_L="+joku2[0].ret);
-           pala3=String(joku2[0].ret);;
-              // pal=palaNimiGraffaksi(pala);
-           // //console.log("pala sisalla kuvana="+pal);
-           console.log("pala3 return SmikaPalaKuva_L="+pala3); 
-           console.log("ux="+ux+"uy="+uy);
-          
-           return(pala3);
-            }
-            
-    )
-    .catch(err => {
-        //console.log(err);
-        console.log("Ei tahan pitas paasta222");
-    });
-        
-   console.log("Ei tahan pitas paasta pala3="+pala3);
-    return("tyhja");
-   // pal=palaNimiGraffaksi(joku2[0].ret);
-
-   // return(pal);
-}*/
-
 
 async function SmikaPalaUnitti_L(ux,uy) {
     
@@ -378,31 +338,6 @@ async function SmikaPalaUnitti_L(ux,uy) {
 }
 
 
-/*function SmikaPalaUnitti_L(ux,uy) {
-    
-    // serverilla
-    var   targetUrl = 'http://localhost:3000/SmikaPalaUnitti/'+ux+'/'+uy;
-    fetch(targetUrl)
-    .then(res => res.json()) // expecting text
-        .then(joku2 => {
-            //console.log("vastaus clientiin text="+joku2[0].ret);
-            pal=palaNimiGraffaksi(joku2[0].ret);
-
-            return(pal);
-        
-          }
-        )
-        .catch(err => {
-            //console.log(err);
-        });
-    
-       // re=joku2.ret;
-       ;
-
-  
-
-
-}*/
 
 
 
@@ -463,18 +398,8 @@ async function SseuraavaUnitti_L() {
     let response1 = await fetch(targetUrl);
     let json1= await response1.json();
 
-    unittix=json1.x;
-    unittiy=json1.y;
-
-//****************************************************************
-    //****************************************************************
-//****************************************************************
-    //**************************************************************** */
-    // TASSA PITAS päivittaa unittix JA unittiy
-    
-    //let json1= await response1.json();
-  
- 
+    unittix=json1[0].x;
+    unittiy=json1[0].y;
 }
 
 async function SkasitteleLiike_L(t,x,y) {
@@ -511,21 +436,6 @@ async function SkasitteleLiike_L(t,x,y) {
     //ret=SkasitteleLiike(t2,x,y);
     return(re);
 }
-
-/*function SalustaKartta_L() {
-    SalustaKartta();
-    
-}
-
-function SalustakarttaPelaaja_L() {
-    SalustakarttaPelaaja();
-}
-
-function Salustaunitit_L() {
-    Salustaunitit();
-}
-
-*/
 
 
 

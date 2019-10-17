@@ -1,4 +1,4 @@
-const express = require('express');
+﻿const express = require('express');
 const app = express();
  
 app.use(express.json());
@@ -12,8 +12,10 @@ app.get('/Steenako', (req, res) => {
      //
      //console.log("Nako kutsuttu");
      Stee_nako();
-     //console.log("lähetä stringi="+a);
-     //res.send("nako kutsuttu");
+     joku = [{"joku": "jotain"}];
+     
+     a = JSON.stringify(joku);
+     res.send(a);
 });
  
 
@@ -73,11 +75,14 @@ app.get('/SkasitteleLiike/:id1/:id2/:id3', (req, res) => {
 
     intti=SkasitteleLiike(t,tokaluku,kolmasluku);
     
-      
+    palautus_olio= [{"tieto1": 10,
+                     "tieto2": 12}];
+                     
+                     
 
-    a = JSON.stringify(intti);
-    //console.log("palautetaan stringi="+a);
-    //console.log("lähetä json="+siirto_olio);
+    a = JSON.stringify(palautus_olio);
+    console.log("palautetaan stringi="+a);
+    console.log("lähetä json="+palautus_olio);
     
     res.send(a);
 });
@@ -99,7 +104,7 @@ app.get('/SmikaPalaMaasto/:id1/:id2', (req, res) => {
         "ret": palanimi,
     }];
 
-
+    console.log("SmikaPalaMaasto palautettavan palan nimi "+palanimi);
     a = JSON.stringify(siirto_olio);
     //console.log("palautetaan stringi="+palanimi);
     //console.log("lähetä stringi="+a);
@@ -123,7 +128,7 @@ app.get('/SmikaPalaKuva/:id1/:id2', (req, res) => {
         "ret": palanimi,
     }];
     
-
+    console.log("SmikaPalaKuva palautettavan palan nimi "+palanimi);
     a = JSON.stringify(siirto_olio);
     
     
@@ -145,6 +150,8 @@ app.get('/SmikaPalaUnitti/:id1/:id2', (req, res) => {
 
     palanimi=SmikaPalaUnitti(ekaluku,tokaluku);
     
+
+    console.log("SmikaPalaUnitti palautettavan palan nimi "+palanimi);
     siirto_olio = [{ 
         "ret": palanimi,
     }];
@@ -274,9 +281,11 @@ function SseuraavaUnitti() {
         /*
             TÄSSÄ ON EPÄMÄÄRÄINEN TIEDONSIIRTO SERVERILTA CLIENTIN GLOBAALEIHIN MUUTTUJIIN
         */
-        
-        unittix=SnextUnitX(seuraavaunitti);
-        unittiy=SnextUnitY(seuraavaunitti);
+       
+                
+        unittix=Sunitit[seuraavaunitti].x;
+        unittiy=Sunitit[seuraavaunitti].y;
+        console.log("seuraavunitti="+seuraavaunitti+" x="+unittix+"y="+unittiy);
         return([{"x":unittix, "y":unittiy}]);
         
         
@@ -304,7 +313,7 @@ function SmikaPalaKuva(x, y) {
 
 
 function SmikaPalaMaasto(x, y) {
-    console.log("Mikapala maasto x="+x+ " y="+y);
+    //console.log("Mikapala maasto x="+x+ " y="+y);
     return(Smkartta[x][y]);
 }
 
@@ -363,7 +372,7 @@ function SkasitteleLiike(tapahtuma,x,y){
         kohdey=Sunitit[unittinum].y+1;
     } else if(tapahtuma=="DOWNLEFT") {
         kohdex=Sunitit[unittinum].x-1;
-        kohdey=Sunitit[unittinumi].y+1;
+        kohdey=Sunitit[unittinum].y+1;
     } else if(tapahtuma=="UPRIGHT") {
         kohdex=Sunitit[unittinum].x+1;
         kohdey=Sunitit[unittinum].y-1;
@@ -425,6 +434,7 @@ function SkasitteleLiike(tapahtuma,x,y){
         Sunitit[unittinum].x=kohdex;
         Sunitit[unittinum].y=kohdey;
         Sunitit[unittinum].lp--;
+        console.log("Serverin liikkeen oikea teko unittinum"+unittinum+"kohdex="+kohdex+"kohdey"+kohdey);
     } else if(tulostapahtuma=="PAASEE_VIH_UNIT" ) {
        
         a=Math.floor(Math.random() * (10 - 1 + 1));
@@ -486,33 +496,13 @@ function StuhoaUnitti(i) {
 
 }
 
-function SnextUnitX(seuraavaunitti) {
-    
-    
-    return(Sunitit[seuraavaunitti].x);
-}
-
-function SnextUnitY(seuraavaunitti) {
-    return(Sunitit[seuraavaunitti].y);
-}
-
-function SnextUnitColor(seuraavaunitti) {
-    return(Sunitit[seuraavaunitti].omistaja);
-}
-
-function SnextUnitType(seuraavaunitti) {
-    return(Sunitit[seuraavaunitti].tyyppi);
-}
-
-function SnextUnitKuva(seuraavaunitti) {
-    return(Sunitit[seuraavaunitti].kuva);
-}
 
 
 // tehdaan nakemisrutiini kaikille pelaajan uniteille
 // vahan hullua kutsua joka piirtokerralla tosin
 function Stee_nako() {
     
+    console.log("Ollaan serverin nakotekorutiinissa");
     for(let i=0;i<=SunittienMaara; i++) {
         if(Sunitit[i].omistaja==pelaaja) {
             // on pelaajan unitti  
@@ -557,6 +547,7 @@ function Stee_nako() {
             }   
         } 
     }
+    console.log("poistutaan serverin nakotekorutiinissa");
 }
 
 function SonkoUnitti(x,y)

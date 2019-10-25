@@ -5,6 +5,14 @@ app.use(express.json());
  
 
 
+
+
+
+
+
+
+
+
 app.get('/Steenako', (req, res) => {
      //a = JSON.stringify(games);
      //console.log("lähetä stringi="+a);
@@ -189,7 +197,9 @@ pelaaja="white";
 */
 let Skarttaxkoko=900;
 let Skarttaykoko=900;
+let pelaajienmaara=100;
 
+spelaajat= [];
 let Smkartta = [];
 let Smkarttapelaaja = [];
 
@@ -247,11 +257,21 @@ class tapahtumaX {
     }
 }
 
+class pelaajaluokka {
+    constructor (tunnus, salasana, koodi) {
+        this.tunnus=tunnus;
+        this.salasana=salasana;
+        this.koodi=koodi;
+
+    }
+
+}
 
 /* Alustuksia */
 SalustaKartta();
 SalustakarttaPelaaja();
 
+SalustaPelaajat();
 Salustaunitit();
 
 
@@ -572,6 +592,14 @@ function SonkoUnitti(x,y)
 //
 //  Alustuksia Serverin pää
 //
+
+function SalustaPelaajat() {
+    spelaajat[0]=new pelaajaluokka("or","peppu","1234");
+    spelaajat[1]=new pelaajaluokka("ar","perse","5678");
+    spelaajat[2]=new pelaajaluokka("kari","beba","0987");
+    pelaajienmaara=2;
+}
+
 function SalustaKartta() {
     console.log("Kartta alustettu");
     for(let i=0;i<Skarttaxkoko;i++) {
@@ -610,6 +638,47 @@ function Salustaunitit() {
 }
 
 
+app.get('/SmikaPelaajaTunnus/:id1/:id2', (req, res) => {
+
+    
+    eka =req.params.id1;
+    toka= req.params.id2;
+        
+    console.log("id1="+eka+" id2="+toka);
+    loyty=false;
+   // console.log("id1="+ekaluku+" id2="+tokaluku);
+
+    //palanimi=SmikaPalaKuva(ekaluku,tokaluku);
+    
+    for(let w=0;w<=pelaajienmaara;w++) {
+        if(spelaajat[w].tunnus==eka && spelaajat[w].salasana==toka) {
+            // Loytyi
+            siirto_olio = [{ 
+                "ret": spelaajat[w].koodi,
+            }];        
+            loyty=true;
+        }
+    }
+
+    if(loyty==false) {
+        siirto_olio = [{ 
+            "ret": "666",
+        }];        
+
+    }
+    
+
+    a = JSON.stringify(siirto_olio);
+    console.log("Pelaaja tunnus rend palautus="+a);    
+    
+    res.send(a);
+});
+
+
+
+
 const port = process.env.PORT || 3000;
 app.listen(port, () => console.log(`Listening on port ${port}...`));
+
+
 

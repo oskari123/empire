@@ -1,0 +1,8 @@
+seuraavaksi:
+
+-liikkeen jälkeen pitäisi toimittaa tapahtumasta tietoa ja liikepisteita yms
+
+Arvojen tulostus ei pyyhkiydy alta kun printtaa uutta!!!
+
+
+
